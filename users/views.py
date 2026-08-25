@@ -1,29 +1,24 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from  django import forms
+from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth.forms import AuthenticationForm
 
 from users.forms import SignUpForm
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        form = AuthenticationForm(request, data=request.POST)
 
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            auth_login(request, user)
+        if form.is_valid():
+            auth_login(request, form.get_user())
             messages.success(request, 'You have successfully logged in.'.strip())
             return redirect('home')
         else:
-            messages.error(request, 'Invalid credentials')
-            return redirect('login')
+            messages.error(request, 'Invalid username or password.')
+    else:
+        form = AuthenticationForm()
 
-    return render(request, 'users/login.html')
+    return render(request, 'users/login.html', {'form': form})
 
 
 def logout_view(request):

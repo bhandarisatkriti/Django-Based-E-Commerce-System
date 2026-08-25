@@ -17,7 +17,11 @@ git log [q for exist]
 
 git add .
 git commit -m "mess..."
-git push -u origin feat/product
+git push -u origin feat/store
 
 
+git pull origin main   
+git add .   
+git commit -m "resolved conflict with main"  
+git push origin HEAD  
 
