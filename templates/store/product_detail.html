@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container px-4 px-lg-5 my-5">
+    <div class="row gx-4 gx-lg-5 align-items-center">
+        <div class="col-md-6">
+            {% if product.image %}
+            <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" />
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h1 class="display-6 fw-bolder">{{ product.name }}</h1>
+            <div class="fs-5 mb-3">
+                Category: <span class="badge bg-secondary">{{ product.category.name }}</span>
+            </div>
+
+            <div class="fs-3 mb-3">
+                {% if product.is_sale and product.sale_price %}
+                    <span class="badge bg-dark text-white">Sale</span>
+                    <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+                    <span class="fw-bold">${{ product.sale_price }}</span>
+                {% else %}
+                    <span class="fw-bold">${{ product.price }}</span>
+                {% endif %}
+            </div>
+
+            <p>{{ product.description }}</p>
+
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'cart_add' product.id %}" class="d-flex align-items-center gap-2 mt-4">
+                {% csrf_token %}
+                <label for="quantity" class="form-label mb-0">Quantity</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control" style="width: 100px;">
+                <button type="submit" class="btn btn-outline-dark">
+                    <i class="bi-cart-fill me-1"></i> Add to Cart
+                </button>
+            </form>
+            {% else %}
+            <p class="mt-4">
+                <a href="{% url 'login' %}?next={% url 'product_detail' product.id %}">Login</a> to add this product to your cart.
+            </p>
+            {% endif %}
+
+            {% if user.is_staff %}
+            <div class="mt-4 d-flex gap-2">
+                <a href="{% url 'product_update' product.id %}" class="btn btn-outline-secondary">Edit Product</a>
+                <a href="{% url 'product_delete' product.id %}" class="btn btn-outline-danger">Delete Product</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
